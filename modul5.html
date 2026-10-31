@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moduł 5 · Pole obszaru między y = x² oraz y = cos(x)</title>
+<link rel="stylesheet" href="css/style.css">
+
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+<a class="brand" href="index.html">Pole obszaru · metody numeryczne</a>
+<nav class="nav"><a href="index.html">Start</a><a href="modul1.html">1 · Matematyka</a><a href="modul2.html">2 · Kod</a><a href="modul3.html">3 · Arkusz</a><a href="modul4.html">4 · Aplet</a><a href="modul5.html" class="active">5 · Animacja</a></nav>
+</div></header>
+<main class="wrap">
+<section class="hero"><span class="eyebrow">Moduł 5</span><h1>Komputerowa animacja metod numerycznych</h1><p class="lead">Dwie animacje pokazują, jak działają obie metody użyte w zadaniu.</p></section>
+<section class="card">
+<h2><span class="badge">5.1</span>Animacja bisekcji</h2>
+<p>Zawężanie przedziału poszukiwań pierwiastka równania \(x^2-\cos x=0\), czyli \(f(x)=\cos x-x^2=0\). Lewy wykres pokazuje cały przedział \([0,1]\), a prawy – powiększenie aktualnego przedziału \([a,b]\). W każdej iteracji zielona linia (\(a\)) i czerwona linia (\(b\)) zbliżają się do siebie, a czarny punkt to środek \(c\). Pod wykresami widać bieżące wartości \(a\), \(b\), \(c\), \(f(c)\) i połowę długości przedziału, która po 19 iteracjach spada poniżej \(\varepsilon=10^{-6}\).</p>
+<video controls loop muted playsinline preload="metadata" src="assets/animacja_bisekcja.mp4">Twoja przeglądarka nie obsługuje odtwarzania wideo.</video>
+</section>
+<section class="card">
+<h2><span class="badge">5.2</span>Animacja całkowania</h2>
+<p>Zagęszczanie siatki podziału \(n\to\infty\) w metodzie trapezów. Na lewym wykresie widać trapezy między krzywymi \(y=\cos x\) i \(y=x^2\) – dla większego \(n\) są coraz węższe i coraz dokładniej wypełniają obszar. Na prawym wykresie niebieskie punkty to suma pól trapezów \(T_n\), która zbliża się do czerwonej linii przerywanej, czyli rzeczywistego pola \(P\approx1{,}094754\).</p>
+<video controls loop muted playsinline preload="metadata" src="assets/animacja_calkowanie.mp4">Twoja przeglądarka nie obsługuje odtwarzania wideo.</video>
+</section>
+<div class="pager"><a href="modul4.html"><span class="sp">← Poprzednia</span><b>Moduł 4 · Aplet w GeoGebrze</b></a><a class="next" href="index.html"><span class="sp">Wróć →</span><b>Strona startowa</b></a></div>
+</main>
+<footer>Projekt z metod numerycznych · bisekcja i całkowanie numeryczne</footer>
+
+</body>
+</html>

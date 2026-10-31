@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moduł 2 · Pole obszaru między y = x² oraz y = cos(x)</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/code.css">
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+<a class="brand" href="index.html">Pole obszaru · metody numeryczne</a>
+<nav class="nav"><a href="index.html">Start</a><a href="modul1.html">1 · Matematyka</a><a href="modul2.html" class="active">2 · Kod</a><a href="modul3.html">3 · Arkusz</a><a href="modul4.html">4 · Aplet</a><a href="modul5.html">5 · Animacja</a></nav>
+</div></header>
+<main class="wrap">
+<section class="hero"><span class="eyebrow">Moduł 2</span><h1>Implementacja programistyczna</h1><p class="lead">Program w Pythonie: bisekcja dla granic całkowania oraz metody trapezów i Simpsona dla pola obszaru.</p></section>
+<section class="card">
+<h2><span class="badge">2.1</span>Opis programu</h2>
+<p>Program napisano w języku <strong>Python 3</strong> i korzysta tylko z wbudowanego modułu <code>math</code>, więc nie wymaga instalowania dodatkowych bibliotek. Realizuje trzy zadania:</p>
+<ul>
+<li><strong>bisekcja</strong> – wyznacza dodatni i ujemny punkt przecięcia z dokładnością \(\varepsilon=10^{-6}\),</li>
+<li><strong>całkowanie</strong> – oblicza pole złożoną metodą trapezów i złożoną metodą Simpsona dla \(n=100\),</li>
+<li><strong>ocena błędu</strong> – porównuje wyniki z wartością \(P=F(b)-F(a)\), gdzie \(F(x)=\sin x-\frac{x^3}{3}\).</li>
+</ul>
+<p>Uruchomienie: <code>python program.py</code>. Parametry \(\varepsilon\) i \(n\) zmienia się w dwóch pierwszych stałych na początku pliku.</p>
+</section>
+
+<section class="card">
+<h2><span class="badge">2.2</span>Kod źródłowy</h2>
+<div class="codebox">
+<div class="codebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp; program.py
+<button class="copy" id="copybtn" type="button">Kopiuj kod</button></div>
+<div class="hl"><pre><span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Pole obszaru ograniczonego krzywymi y = x^2 oraz y = cos(x).</span>
+
+<span class="sd">1) Punkty przecięcia (granice całkowania) - metoda bisekcji dla f(x) = cos(x) - x^2.</span>
+<span class="sd">2) Pole obszaru - złożona metoda trapezów oraz złożona metoda Simpsona.</span>
+<span class="sd">3) Wartość odniesienia z wzoru analitycznego P = F(b) - F(a), F(x) = sin(x) - x^3/3.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="n">EPS</span> <span class="o">=</span> <span class="mf">1e-6</span>   <span class="c1"># dokładność bisekcji</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">100</span>      <span class="c1"># liczba podprzedziałów (parzysta - wymaga tego metoda Simpsona)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Funkcja, której miejsca zerowe szukamy: f(x) = cos(x) - x^2.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">bisekcja</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metoda bisekcji na przedziale [a, b], gdzie f(a)*f(b) &lt; 0.</span>
+<span class="sd">    Zwraca przybliżony pierwiastek oraz liczbę wykonanych iteracji.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Brak zmiany znaku na przedziale - bisekcja nie zadziała.&quot;</span><span class="p">)</span>
+    <span class="n">iteracje</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="n">eps</span><span class="p">:</span>          <span class="c1"># połowa długości przedziału = oszacowanie błędu</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>               <span class="c1"># środek przedziału</span>
+        <span class="k">if</span> <span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>          <span class="c1"># pierwiastek w lewej połowie</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">else</span><span class="p">:</span>                         <span class="c1"># pierwiastek w prawej połowie</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="n">iteracje</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">iteracje</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">g</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Funkcja podcałkowa: różnica górnej i dolnej krzywej.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">trapezy</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Złożona metoda trapezów: T = h*[ (g0+gn)/2 + g1 + ... + g(n-1) ].&quot;&quot;&quot;</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="n">suma</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">g</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">suma</span> <span class="o">+=</span> <span class="n">g</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">h</span> <span class="o">*</span> <span class="n">suma</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simpson</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Złożona metoda Simpsona (n parzyste): S = h/3*[ g0 + 4*nieparz. + 2*parz. + gn ].&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;W metodzie Simpsona n musi być parzyste.&quot;</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="n">suma</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">g</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">suma</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">4</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">g</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">suma</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">F</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Funkcja pierwotna: F(x) = sin(x) - x^3/3.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">/</span> <span class="mi">3</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 1. Granice całkowania: pierwiastek dodatni w [0, 1], ujemny w [-1, 0]</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">it_b</span> <span class="o">=</span> <span class="n">bisekcja</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">EPS</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">it_a</span> <span class="o">=</span> <span class="n">bisekcja</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">EPS</span><span class="p">)</span>
+
+    <span class="c1"># 2. Pole obszaru dwiema metodami</span>
+    <span class="n">P_trap</span> <span class="o">=</span> <span class="n">trapezy</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">P_simp</span> <span class="o">=</span> <span class="n">simpson</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># 3. Wartość odniesienia i błędy</span>
+    <span class="n">P_ref</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">F</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">linia</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">54</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">54</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; POLE OBSZARU MIEDZY y = x^2 ORAZ y = cos(x)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">54</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Dokladnosc bisekcji    eps = </span><span class="si">{</span><span class="n">EPS</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Liczba podprzedzialow    n = </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">linia</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Punkt przeciecia a = </span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">  (iteracji: </span><span class="si">{</span><span class="n">it_a</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Punkt przeciecia b = </span><span class="si">{</span><span class="n">b</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">  (iteracji: </span><span class="si">{</span><span class="n">it_b</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">linia</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Pole - metoda trapezow   : </span><span class="si">{</span><span class="n">P_trap</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Pole - metoda Simpsona   : </span><span class="si">{</span><span class="n">P_simp</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Wartosc odniesienia      : </span><span class="si">{</span><span class="n">P_ref</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Blad trapezow : </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">P_trap</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">P_ref</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Blad Simpsona : </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">P_simp</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">P_ref</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">linia</span><span class="p">)</span>
+
+    <span class="c1"># 4. Zbieżność metod w zależności od n</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; Zbieznosc w zaleznosci od n:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; n=</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  trapezy=</span><span class="si">{</span><span class="n">trapezy</span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;  simpson=</span><span class="si">{</span><span class="n">simpson</span><span class="p">(</span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+</div>
+<div class="btnrow"><a class="btn" href="assets/program.py" download>Pobierz program.py</a></div>
+</section>
+
+<section class="card">
+<h2><span class="badge">2.3</span>Uruchomienie programu</h2>
+<p>Zrzut ekranu z wykonania programu w terminalu (polecenie <code>python program.py</code>). Widoczne są parametry wejściowe (dokładność \(\varepsilon\) i liczba podprzedziałów \(n\)), znalezione punkty przecięcia wraz z liczbą iteracji oraz ostateczny wynik pola powierzchni.</p>
+<figure class="native"><img src="assets/terminal.png" alt="Zrzut ekranu z uruchomienia programu w terminalu" width="371" height="389"></figure>
+<div class="tbl-scroll"><table class="plain left"><thead><tr><th>wielkość</th><th>wartość z programu</th></tr></thead><tbody><tr><td>dokładność bisekcji \(\varepsilon\)</td><td>\(10^{-6}\)</td></tr><tr><td>liczba podprzedziałów \(n\)</td><td>\(100\)</td></tr><tr><td>punkt przecięcia \(a\)</td><td>\(-0{,}82413197\) (iteracji: 19)</td></tr><tr><td>punkt przecięcia \(b\)</td><td>\(0{,}82413197\) (iteracji: 19)</td></tr><tr><td>pole – metoda trapezów</td><td>\(1{,}09464574\)</td></tr><tr><td>pole – metoda Simpsona</td><td>\(1{,}09475361\)</td></tr><tr><td>wartość odniesienia \(F(b)-F(a)\)</td><td>\(1{,}09475361\)</td></tr><tr><td>błąd trapezów</td><td>\(1{,}08\cdot10^{-4}\)</td></tr><tr><td>błąd Simpsona</td><td>\(6{,}02\cdot10^{-10}\)</td></tr><tr><td><strong>wynik końcowy – pole \(P\)</strong></td><td><strong>\(1{,}09475361\)</strong></td></tr></tbody></table></div>
+</section>
+<div class="pager"><a href="modul1.html"><span class="sp">← Poprzednia</span><b>Moduł 1 · Opracowanie matematyczne</b></a><a class="next" href="modul3.html"><span class="sp">Następna →</span><b>Moduł 3 · Arkusz kalkulacyjny</b></a></div>
+</main>
+<footer>Projekt z metod numerycznych · bisekcja i całkowanie numeryczne</footer>
+<script>
+document.getElementById('copybtn').addEventListener('click', function () {
+  var btn = this, txt = document.querySelector('.hl').innerText;
+  (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(function () {
+    btn.textContent = 'Skopiowano'; setTimeout(function () { btn.textContent = 'Kopiuj kod'; }, 1600);
+  }).catch(function () { var r = document.createRange(); r.selectNodeContents(document.querySelector('.hl')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); });
+});
+</script>
+</body>
+</html>

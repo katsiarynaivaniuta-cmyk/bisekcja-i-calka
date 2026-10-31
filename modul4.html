@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moduł 4 · Pole obszaru między y = x² oraz y = cos(x)</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/code.css">
+
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+<a class="brand" href="index.html">Pole obszaru · metody numeryczne</a>
+<nav class="nav"><a href="index.html">Start</a><a href="modul1.html">1 · Matematyka</a><a href="modul2.html">2 · Kod</a><a href="modul3.html">3 · Arkusz</a><a href="modul4.html" class="active">4 · Aplet</a><a href="modul5.html">5 · Animacja</a></nav>
+</div></header>
+<main class="wrap wide">
+<section class="hero"><span class="eyebrow">Moduł 4</span><h1>Aplet / symulacja w GeoGebrze</h1><p class="lead">Wykresy obu funkcji, zacieniowany obszar między nimi oraz trapezy ilustrujące przybliżenie całki w zależności od suwaka \(n\).</p></section>
+
+<section class="card">
+<h2><span class="badge">4.1</span>Aplet osadzony na stronie</h2>
+<p>Aplet rysuje parabolę \(y=x^2\) (czerwona), cosinusoidę \(y=\cos x\) (zielona) oraz zacieniowany obszar między nimi. Czarne punkty \(A\) i \(B\) to punkty przecięcia krzywych, czyli granice całkowania. Brązowe <strong>trapezy</strong> wpisane między krzywe pokazują geometryczną interpretację przybliżenia całki \(\int_a^b(\cos x-x^2)\,dx\). <strong>Suwak \(n\)</strong> w lewym górnym rogu zmienia liczbę podprzedziałów: im większe \(n\), tym trapezy są węższe, a ich łączne pole \(T_n\) bliższe polu obszaru \(P\).</p>
+<p>Przeciągnij suwak \(n\) (albo zaznacz go i użyj strzałek). Koło myszy przybliża i oddala wykres, a przyciski po prawej stronie przywracają widok początkowy i włączają pełny ekran. Plik apletu można też <a href="assets/pole_obszaru.ggb" download="pole_obszaru.ggb">pobrać jako .ggb</a>. Pod apletem na bieżąco widać \(n\), sumę trapezów \(T_n\), pole \(P\) oraz błąd.</p>
+</section>
+
+<div class="ggbwrap" id="ggb-box"><div class="ggb-ph" id="ggb-ph">Ładowanie apletu GeoGebry…</div><div id="ggb-element"></div></div>
+
+<div class="stats">
+<div class="stat"><small>liczba podprzedziałów \(n\)</small><strong id="v-n">10</strong></div>
+<div class="stat"><small>suma trapezów \(T_n\)</small><strong id="v-T">–</strong></div>
+<div class="stat"><small>pole obszaru \(P\)</small><strong id="v-P">–</strong></div>
+<div class="stat"><small>błąd \(|P-T_n|\)</small><strong id="v-E">–</strong></div>
+</div>
+
+<section class="card">
+<h2><span class="badge">4.2</span>Plik GeoGebry i komendy</h2>
+<p>Ten sam model można otworzyć w programie GeoGebra Classic – jako plik <a href="assets/pole_obszaru.ggb" download="pole_obszaru.ggb"><strong>pole_obszaru.ggb</strong></a> (File → Open w GeoGebra Classic albo przeciągnięcie pliku na stronę geogebra.org/classic) lub przez wklejenie gotowych komend. Plik zawiera funkcje \(y=x^2\) i \(y=\cos x\), punkty przecięcia \(A\) i \(B\), zacieniowany obszar, suwak \(n\) oraz trapezy.</p>
+<div class="btnrow">
+<a class="btn" href="assets/pole_obszaru.ggb" download="pole_obszaru.ggb">Pobierz plik .ggb</a>
+<button class="btn ghost" id="btn-open" type="button">Otwórz GeoGebrę</button>
+<a class="btn ghost" href="assets/geogebra_komendy.txt" download>Pobierz komendy (.txt)</a>
+</div>
+<p id="ggb-status" style="color:var(--muted);font-size:15px;min-height:1.4em" aria-live="polite"></p>
+<details><summary>Pokaż komendy GeoGebry</summary>
+<div class="codebox">
+<div class="codebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp; komendy GeoGebry<button class="copy" id="btn-copy" type="button">Kopiuj komendy</button></div>
+<div class="hl"><pre id="ggb-commands">g(x)=x^2
+h(x)=cos(x)
+d(x)=h(x)-g(x)
+A=Intersect(g,h,-1,0)
+B=Intersect(g,h,0,1)
+n=Slider(1,100,1,1,260,false,true,false,false)
+SetValue(n,10)
+obszar=IntegralBetween(h,g,x(A),x(B))
+trap=TrapezoidalSum(d,x(A),x(B),n)
+simp=Integral(d,x(A),x(B))
+krok=(x(B)-x(A))/n
+trapezy=Sequence(Polygon((x(A)+(k-1)*krok,g(x(A)+(k-1)*krok)),(x(A)+k*krok,g(x(A)+k*krok)),(x(A)+k*krok,h(x(A)+k*krok)),(x(A)+(k-1)*krok,h(x(A)+(k-1)*krok))),k,1,n)
+SetVisibleInView(d,1,false)
+SetVisibleInView(trap,1,false)
+SetVisibleInView(simp,1,false)
+SetColor(g,"#C0574A")
+SetColor(h,"#3F7E69")
+SetColor(obszar,"#E8CE8C")
+SetColor(trapezy,"#9A7418")
+SetFilling(obszar,0.3)
+SetFilling(trapezy,0.45)</pre></div>
+</div>
+</details>
+</section>
+
+<div class="pager"><a href="modul3.html"><span class="sp">← Poprzednia</span><b>Moduł 3 · Arkusz kalkulacyjny</b></a><a class="next" href="modul5.html"><span class="sp">Następna →</span><b>Moduł 5 · Animacja metod numerycznych</b></a></div>
+</main>
+<footer>Projekt z metod numerycznych · bisekcja i całkowanie numeryczne</footer>
+<script src="js/geogebra.js"></script>
+</body>
+</html>

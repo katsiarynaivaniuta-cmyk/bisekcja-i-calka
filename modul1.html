@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moduł 1 · Pole obszaru między y = x² oraz y = cos(x)</title>
+<link rel="stylesheet" href="css/style.css">
+
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+<a class="brand" href="index.html">Pole obszaru · metody numeryczne</a>
+<nav class="nav"><a href="index.html">Start</a><a href="modul1.html" class="active">1 · Matematyka</a><a href="modul2.html">2 · Kod</a><a href="modul3.html">3 · Arkusz</a><a href="modul4.html">4 · Aplet</a><a href="modul5.html">5 · Animacja</a></nav>
+</div></header>
+<main class="wrap">
+<section class="hero"><span class="eyebrow">Moduł 1</span><h1>Opracowanie matematyczne zagadnienia</h1><p class="lead">Od sformułowania całki, przez bisekcję, po wzory na całkowanie numeryczne i oszacowanie błędu.</p></section>
+<section class="card">
+<h2><span class="badge">1.1</span>Sformułowanie problemu</h2>
+<p>Obie krzywe są wykresami funkcji parzystych, więc obszar jest symetryczny względem osi \(Oy\). Krzywe przecinają się w punktach, w których \(x^{2}=\cos x\).
+Dla \(x=0\) mamy \(\cos 0=1\gt 0=0^{2}\), zatem w środku obszaru wykres cosinusa leży <em>nad</em> parabolą i pole wyraża się całką oznaczoną z różnicy funkcji:</p>
+<div class="eq">\[ P=\int_{a}^{b}\bigl(\cos x-x^{2}\bigr)\,dx, \qquad a=-b\lt 0\lt b. \]</div>
+<p>Z symetrii wynika wygodna postać:</p>
+<div class="eq">\[ P=2\int_{0}^{b}\bigl(\cos x-x^{2}\bigr)\,dx. \]</div>
+<p>Funkcja podcałkowa ma funkcję pierwotną</p>
+<div class="eq">\[ F(x)=\sin x-\frac{x^{3}}{3}, \]</div>
+<p>więc</p>
+<div class="eq">\[ P=F(b)-F(a)=2\left(\sin b-\frac{b^{3}}{3}\right). \]</div>
+<p>Całka jest zatem elementarna, ale granice \(a,b\), czyli rozwiązania równania przestępnego \(x^{2}-\cos x=0\), nie dają się zapisać wzorem.
+Wyznaczamy je numerycznie, a wzór na \(F\) posłuży później jako <strong>wartość odniesienia</strong> do oceny błędu całkowania numerycznego.</p>
+</section>
+
+<section class="card">
+<h2><span class="badge">1.2</span>Wyznaczenie granic całkowania \(a\) i \(b\) – metoda bisekcji</h2>
+<p>Szukamy miejsc zerowych funkcji</p>
+<div class="eq">\[ f(x)=\cos x-x^{2}. \]</div>
+<h3>Warunek istnienia pierwiastka (twierdzenie Darboux)</h3>
+<p>Jeżeli funkcja \(f\) jest ciągła na przedziale \([\alpha,\beta]\) oraz \(f(\alpha)\cdot f(\beta)\lt 0\), to istnieje punkt \(\xi\in(\alpha,\beta)\), dla którego \(f(\xi)=0\).
+Funkcja \(f\) jest ciągła na \(\mathbb{R}\), a na przedziale \([0,1]\) mamy</p>
+<div class="eq">\[ f(0)=1\gt 0,\qquad f(1)=\cos 1-1\approx-0{,}4597\lt 0, \]</div>
+<p>czyli w przedziale \((0,1)\) leży pierwiastek. Jest on jedyny, ponieważ</p>
+<div class="eq">\[ f'(x)=-\sin x-2x\lt 0 \quad\text{dla }x\in(0,1], \]</div>
+<p>a więc \(f\) jest tam ściśle malejąca. Funkcja \(f\) jest parzysta, więc drugi pierwiastek jest równy \(a=-b\) i leży w przedziale \([-1,0]\), gdzie \(f(-1)\lt 0\lt f(0)\).</p>
+<h3>Algorytm</h3>
+<p>Dla przedziału \([a_k,b_k]\) o zmianie znaku wykonujemy kroki:</p>
+<ol>
+<li>obliczamy środek \(c_k=\dfrac{a_k+b_k}{2}\),</li>
+<li>jeśli \(f(a_k)\cdot f(c_k)\le 0\), to \([a_{k+1},b_{k+1}]=[a_k,c_k]\), w przeciwnym razie \([a_{k+1},b_{k+1}]=[c_k,b_k]\),</li>
+<li>kończymy, gdy \(\dfrac{b_k-a_k}{2}\le\varepsilon\); przybliżeniem pierwiastka jest wtedy środek przedziału.</li>
+</ol>
+<p>Po \(n\) krokach długość przedziału jest równa \((b_0-a_0)/2^{n}\), więc błąd środka spełnia</p>
+<div class="eq">\[ |x^{*}-c_n|\le\frac{b_0-a_0}{2^{n+1}}\le\varepsilon \quad\Longrightarrow\quad n\ge\log_{2}\frac{b_0-a_0}{\varepsilon}-1. \]</div>
+<p>Dla \(b_0-a_0=1\) i \(\varepsilon=10^{-6}\) otrzymujemy \(n\ge\log_2 10^{6}-1\approx 18{,}93\), czyli potrzeba <strong>19 iteracji</strong>.</p>
+<div class="result"><strong>Wynik:</strong> \(b\approx0{,}82413197\), \(a=-b\approx-0{,}82413197\) (dokładność \(\varepsilon=10^{-6}\)).</div>
+</section>
+
+<section class="card">
+<h2><span class="badge">1.3</span>Wzory całkowania numerycznego</h2>
+<p>Oznaczmy \(g(x)=\cos x-x^{2}\). Przedział \([a,b]\) dzielimy na \(n\) równych podprzedziałów:</p>
+<div class="eq">\[ h=\frac{b-a}{n},\qquad x_i=a+ih,\quad i=0,1,\dots,n. \]</div>
+<ul>
+<li>\(n\) – liczba podprzedziałów,</li>
+<li>\(h\) – krok całkowania (szerokość jednego podprzedziału),</li>
+<li>\(x_i\) – węzły podziału, \(g(x_i)\) – wartości funkcji w węzłach.</li>
+</ul>
+<h3>Złożony wzór trapezów</h3>
+<p><em>Wyprowadzenie.</em> Na przedziale \([x_{i-1},x_i]\) wykres funkcji \(g\) zastępujemy odcinkiem łączącym punkty \((x_{i-1},g(x_{i-1}))\) i \((x_i,g(x_i))\). Powstaje trapez o podstawach \(g(x_{i-1})\), \(g(x_i)\) i wysokości \(h\), więc jego pole to \(\frac{h}{2}\bigl(g(x_{i-1})+g(x_i)\bigr)\). Sumujemy pola wszystkich \(n\) trapezów:</p>
+<div class="eq">\[ T_n=\sum_{i=1}^{n}\frac{h}{2}\bigl(g(x_{i-1})+g(x_i)\bigr)
+=h\left[\frac{g(x_0)}{2}+g(x_1)+\dots+g(x_{n-1})+\frac{g(x_n)}{2}\right]. \]</div>
+<p>Każdy węzeł wewnętrzny występuje w sumie dwa razy (jako prawy koniec jednego i lewy koniec następnego trapezu), a skrajne tylko raz, stąd:</p>
+<div class="eq">\[ T_n=h\left[\frac{g(x_0)+g(x_n)}{2}+\sum_{i=1}^{n-1}g(x_i)\right]. \]</div>
+<h3>Złożony wzór Simpsona (\(n\) parzyste)</h3>
+<p><em>Wyprowadzenie.</em> Rozważmy dwa sąsiednie podprzedziały o węzłach \(x_{2i-2},x_{2i-1},x_{2i}\). Przesuńmy oś tak, aby środkowy węzeł leżał w zerze; węzły mają wtedy współrzędne \(-h,\,0,\,h\), a wartości funkcji oznaczmy \(y_0,y_1,y_2\). Przez te trzy punkty przechodzi dokładnie jedna parabola \(p(t)=\alpha t^{2}+\beta t+\gamma\). Z warunków \(p(0)=y_1\), \(p(\pm h)=\alpha h^{2}\pm\beta h+\gamma\) dostajemy</p>
+<div class="eq">\[ \gamma=y_1,\qquad \alpha=\frac{y_0-2y_1+y_2}{2h^{2}}. \]</div>
+<p>Pole pod parabolą (składnik z \(\beta t\) jest nieparzysty i się zeruje):</p>
+<div class="eq">\[ \int_{-h}^{h}p(t)\,dt=\frac{2\alpha h^{3}}{3}+2\gamma h=\frac{h}{3}\,(y_0-2y_1+y_2)+2hy_1=\frac{h}{3}\,(y_0+4y_1+y_2). \]</div>
+<p>Sumując po wszystkich \(n/2\) parach podprzedziałów, węzły o numerach nieparzystych dostają wagę \(4\), a parzyste wewnętrzne wagę \(2\) (bo należą do dwóch sąsiednich par). Otrzymujemy</p>
+<div class="eq">\[ S_n=\frac{h}{3}\left[g(x_0)+4\sum_{i=1}^{n/2}g(x_{2i-1})+2\sum_{i=1}^{n/2-1}g(x_{2i})+g(x_n)\right]. \]</div>
+<p>W programie i w arkuszu użyto obu metod; w arkuszu wagi \(1,4,2,4,\dots,2,4,1\) stoją w osobnej kolumnie.</p>
+</section>
+
+<section class="card">
+<h2><span class="badge">1.4</span>Szacowanie błędu</h2>
+<p>Dla funkcji \(g(x)=\cos x-x^{2}\) mamy \(g''(x)=-\cos x-2\) oraz \(g^{(4)}(x)=\cos x\), więc \(|g''|\le 3\) i \(|g^{(4)}|\le 1\). Stąd oszacowania:</p>
+<div class="eq">\[ |P-T_n|\le\frac{(b-a)\,h^{2}}{12}\max_{[a,b]}|g''(x)|\le\frac{(b-a)\,h^{2}}{4}, \]
+\[ |P-S_n|\le\frac{(b-a)\,h^{4}}{180}\max_{[a,b]}|g^{(4)}(x)|\le\frac{(b-a)\,h^{4}}{180}. \]</div>
+<p>Dla \(n=100\) jest \(h\approx0{,}016483\), a oszacowania wynoszą odpowiednio \(1{,}12\cdot10^{-4}\) dla trapezów i \(6{,}76\cdot10^{-10}\) dla Simpsona. Rzeczywiste błędy z programu (\(1{,}08\cdot10^{-4}\) i \(6{,}02\cdot10^{-10}\)) mieszczą się w tych granicach.</p>
+<h3>Wpływ liczby podprzedziałów</h3>
+<p>Błąd trapezów maleje jak \(h^{2}\), czyli jak \(1/n^{2}\), a błąd Simpsona jak \(h^{4}\), czyli jak \(1/n^{4}\). Zwiększenie \(n\) dziesięciokrotnie zmniejsza błąd trapezów około 100 razy, a błąd Simpsona około 10 000 razy. Wartością odniesienia jest \(P=F(b)-F(a)\approx1{,}09475361\).</p>
+<div class="tbl-scroll"><table class="plain"><thead><tr><th>\(n\)</th><th>\(T_n\)</th><th>\(|P-T_n|\)</th><th>\(S_n\)</th><th>\(|P-S_n|\)</th></tr></thead><tbody><tr><td>2</td><td>0,82413265</td><td>2,71·10⁻¹</td><td>1,09884307</td><td>4,09·10⁻³</td></tr><tr><td>4</td><td>1,02727834</td><td>6,75·10⁻²</td><td>1,09499357</td><td>2,40·10⁻⁴</td></tr><tr><td>10</td><td>1,08396550</td><td>1,08·10⁻²</td><td>1,09475965</td><td>6,04·10⁻⁶</td></tr><tr><td>20</td><td>1,09205686</td><td>2,70·10⁻³</td><td>1,09475399</td><td>3,77·10⁻⁷</td></tr><tr><td>50</td><td>1,09432214</td><td>4,31·10⁻⁴</td><td>1,09475362</td><td>9,63·10⁻⁹</td></tr><tr><td>100</td><td>1,09464574</td><td>1,08·10⁻⁴</td><td>1,09475361</td><td>6,02·10⁻¹⁰</td></tr><tr><td>1000</td><td>1,09475253</td><td>1,08·10⁻⁶</td><td>1,09475361</td><td>5,95·10⁻¹⁴</td></tr></tbody></table></div>
+<div class="result"><strong>Wynik końcowy:</strong> \(P\approx1{,}0947536\).</div>
+</section>
+<div class="pager"><a href="index.html"><span class="sp">← Poprzednia</span><b>Strona startowa</b></a><a class="next" href="modul2.html"><span class="sp">Następna →</span><b>Moduł 2 · Implementacja programistyczna</b></a></div>
+</main>
+<footer>Projekt z metod numerycznych · bisekcja i całkowanie numeryczne</footer>
+
+</body>
+</html>

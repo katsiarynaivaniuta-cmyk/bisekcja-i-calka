@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start · Pole obszaru między y = x² oraz y = cos(x)</title>
+<link rel="stylesheet" href="css/style.css">
+
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+<a class="brand" href="index.html">Pole obszaru · metody numeryczne</a>
+<nav class="nav"><a href="index.html" class="active">Start</a><a href="modul1.html">1 · Matematyka</a><a href="modul2.html">2 · Kod</a><a href="modul3.html">3 · Arkusz</a><a href="modul4.html">4 · Aplet</a><a href="modul5.html">5 · Animacja</a></nav>
+</div></header>
+<main class="wrap">
+
+<section class="hero"><span class="eyebrow">Metody numeryczne</span>
+<h1>Pole obszaru między krzywymi \(y=x^2\) oraz \(y=\cos x\)</h1>
+<p class="lead">Granice obszaru wyznaczamy metodą bisekcji, a jego pole obliczamy metodami całkowania numerycznego.</p></section>
+
+<section class="card">
+<h2><span class="badge">1</span>Wprowadzenie i cel zadania</h2>
+<p>Rozważamy obszar na płaszczyźnie ograniczony krzywymi o równaniach:</p>
+<div class="eq">\[ y=x^{2}\qquad\text{oraz}\qquad y=\cos x . \]</div>
+<p>Celem jest wyznaczenie pola powierzchni obszaru zamkniętego pomiędzy tymi wykresami. Punkty przecięcia krzywych spełniają równanie przestępne
+\(x^{2}-\cos x=0\), którego nie da się rozwiązać wzorami, więc zadanie rozwiązujemy metodami numerycznymi:</p>
+<ol>
+<li>granice całkowania (punkty przecięcia) wyznaczamy <strong>metodą bisekcji</strong>,</li>
+<li>pole obszaru obliczamy <strong>metodą trapezów</strong> oraz <strong>metodą Simpsona</strong>.</li>
+</ol>
+<div class="result"><strong>Wynik:</strong> punkty przecięcia \(a\approx-0{,}824132\), \(b\approx0{,}824132\), a pole obszaru
+\(P\approx1{,}094754\).</div>
+</section>
+
+<section>
+<h2 style="font-family:Georgia,serif;font-size:24px;margin:34px 0 0">Zawartość strony</h2>
+<div class="grid"><a class="mod" href="modul1.html"><div class="n">1</div><b>Opracowanie matematyczne</b><span>Sformułowanie problemu, metoda bisekcji, wzory na całkowanie numeryczne i oszacowanie błędu.</span></a><a class="mod" href="modul2.html"><div class="n">2</div><b>Implementacja programistyczna</b><span>Kod programu w Pythonie z komentarzami oraz zrzut ekranu z jego uruchomienia.</span></a><a class="mod" href="modul3.html"><div class="n">3</div><b>Arkusz kalkulacyjny</b><span>Arkusz z tabelą iteracji bisekcji, tabelą całkowania i wykresem do pobrania.</span></a><a class="mod" href="modul4.html"><div class="n">4</div><b>Aplet w GeoGebrze</b><span>Aplet GeoGebry z suwakiem liczby podprzedziałów n, trapezami oraz plikiem .ggb.</span></a><a class="mod" href="modul5.html"><div class="n">5</div><b>Animacja metod numerycznych</b><span>Dwa filmy MP4: zawężanie przedziału w bisekcji i zagęszczanie siatki trapezów.</span></a></div>
+</section>
+
+</main>
+<footer>Projekt z metod numerycznych · bisekcja i całkowanie numeryczne</footer>
+
+</body>
+</html>
